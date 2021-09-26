@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "215069552442",
+    "firebase_url": "https://eventism123-312ed-default-rtdb.firebaseio.com",
+    "project_id": "eventism123-312ed",
+    "storage_bucket": "eventism123-312ed.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:215069552442:android:8e42bd6c0cd8b26f6f6a03",
+        "android_client_info": {
+          "package_name": "com.example.event_ism"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "215069552442-6f91k7a559uvpbamj2vm5s1jkt1cji86.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAK4wIHTrqSHtJJknjZQlN2zbQbc1spDnc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "215069552442-193c24t0gpa3om5cg2r00kajuea72b32.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

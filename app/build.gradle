@@ -46,10 +46,13 @@ dependencies {
     implementation "androidx.recyclerview:recyclerview-selection:1.1.0"
     implementation 'com.android.support:multidex:1.0.3'
     implementation 'com.google.gms:google-services:4.3.10'
+    implementation 'com.github.bumptech.glide:glide:4.11.0'
 
+    //for retrieving the data
 //    implementation 'com.firebaseui:firebase-ui-database:7.1.1'
     implementation 'com.firebaseui:firebase-ui-firestore:7.1.1'
 
+    //for storing the data
     implementation 'com.google.firebase:firebase-auth:21.0.1'
     implementation 'com.google.firebase:firebase-firestore:23.0.3'
     implementation 'com.google.firebase:firebase-database:20.0.2'

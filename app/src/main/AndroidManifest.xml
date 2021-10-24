@@ -16,10 +16,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".EventsActivity"/>
         <activity android:name=".ProfileActivity"/>
-        <activity android:name=".CreateEventActivity"/>
-        <activity android:name=".UpdateEventActivity"/>
+        <activity android:name=".DisplayActivity"/>
+        <activity android:name=".EventsPage.CreateEventActivity"/>
+        <activity android:name=".EventsPage.UpdateEventActivity"/>
+
     </application>
 
 </manifest>

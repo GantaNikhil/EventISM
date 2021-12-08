@@ -51,7 +51,7 @@ public class UpdateEventActivity extends AppCompatActivity {
         });
 
 //        if (getIntent().hasExtra("event_name")) {
-//        /*not required btw it is always true.. used for checking extras*/
+          /*not required btw it is always true.. used for checking extras*/
 
         String Event_name = getIntent().getStringExtra("event_name");
         String By = getIntent().getStringExtra("organised_by");
@@ -98,6 +98,7 @@ public class UpdateEventActivity extends AppCompatActivity {
                     change.put("event", eventname.getText().toString().trim());
                     change.put("by", by.getText().toString().trim());
                     change.put("date", date.getText().toString().trim());
+
                     documentReference.update(change);
                     Toast.makeText(UpdateEventActivity.this, "Changes Applied!", Toast.LENGTH_SHORT).show();
                 } else

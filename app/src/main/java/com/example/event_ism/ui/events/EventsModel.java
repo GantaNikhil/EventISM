@@ -14,13 +14,16 @@ public class EventsModel {
 
     String eventid;
 
-    public EventsModel(String event, String by, String count, String date, String docid, String eventid) {
+    String enrollcheck;
+
+    public EventsModel(String event, String by, String count, String date, String docid, String eventid,String enrollcheck) {
         this.by = by;
         this.count = count;
         this.event = event;
         this.date = date;
         this.docid = docid;
         this.eventid = eventid;
+        this.enrollcheck=enrollcheck;
     }
 
     public EventsModel() {
@@ -72,5 +75,13 @@ public class EventsModel {
 
     public void setEventid(String eventid) {
         this.eventid = eventid;
+    }
+
+    public String getEnrollcheck() {
+        return enrollcheck;
+    }
+
+    public void setEnrollcheck(String enrollcheck) {
+        this.enrollcheck = enrollcheck;
     }
 }

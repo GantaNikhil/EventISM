@@ -25,9 +25,13 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
-
     GoogleSignInClient mGoogleSignInClient;
     TextView signin;
     private static final int RC_SIGN_IN = 100;
@@ -109,9 +113,18 @@ public class MainActivity extends AppCompatActivity {
                                 Toast.makeText(MainActivity.this, "Welcome " + user.getDisplayName(), Toast.LENGTH_SHORT).show();
                                 progressBar.setVisibility(View.GONE);
                                 signin.setVisibility(View.VISIBLE);
-                                Log.d("uiddd", user.getUid());
-                                Log.d("photo", String.valueOf(user.getPhotoUrl()));
+//                                Log.d("uiddd", user.getUid());
+//                                Log.d("photo", String.valueOf(user.getPhotoUrl()));
+
                             }
+                            /*Collection of Users*/
+                            Map<String,Object> User =new HashMap<>();
+                            String UID = null;
+                            if(user!=null)
+                                UID=user.getUid();
+                            User.put("Users",UID);
+                            DocumentReference documentReference = FirebaseFirestore.getInstance().collection("Users").document(UID);
+                            documentReference.set(User);
                             Intent intent = new Intent(MainActivity.this, DisplayActivity.class);
                             startActivity(intent);
                             finish();

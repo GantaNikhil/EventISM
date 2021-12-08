@@ -18,10 +18,12 @@ import com.example.event_ism.DisplayActivity;
 import com.example.event_ism.ui.events.EventsActivity;
 import com.example.event_ism.R;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.auth.User;
 
 import java.util.Calendar;
 import java.util.HashMap;
@@ -83,15 +85,14 @@ public class CreateEventActivity extends AppCompatActivity {
         confirm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String count="0";
                 DocumentReference documentReference = fstore.collection("Events").document();
+                String DocID= documentReference.getId();
                 Map<String, Object> events = new HashMap<>();
                 events.put("event", eventname.getText().toString().trim());
                 events.put("by", organisedby.getText().toString().trim());
                 events.put("date", date.getText().toString().trim());
-                events.put("count",count.trim());
                 events.put("eventid", UserID);
-                events.put("docid",documentReference.getId());
+                events.put("docid",DocID);
 
                 documentReference.set(events).addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override

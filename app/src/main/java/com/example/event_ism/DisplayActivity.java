@@ -86,7 +86,6 @@ public class DisplayActivity extends AppCompatActivity {
                         });
                 AlertDialog alertDialog = builder.create();
                 alertDialog.show();
-
         }
         return super.onOptionsItemSelected(item);
     }

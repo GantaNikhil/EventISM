@@ -3,6 +3,7 @@ package com.example.event_ism.ui.events;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,11 +20,16 @@ import com.example.event_ism.R;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class EventsAdapter extends FirestoreRecyclerAdapter<EventsModel, EventsAdapter.MyViewHolder> {
     public EventsAdapter(@NonNull FirestoreRecyclerOptions<EventsModel> options) {
@@ -32,24 +38,41 @@ public class EventsAdapter extends FirestoreRecyclerAdapter<EventsModel, EventsA
 
     @Override
     protected void onBindViewHolder(@NonNull MyViewHolder holder, int position, @NonNull EventsModel eventsModel) {
-        String Uid = null;
+        String UserID = null;
+        String DocID = eventsModel.getDocid();
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if(user!=null)
-            Uid= user.getUid();
+        if (user != null)
+            UserID = user.getUid();
 
-        if(Uid.equals(eventsModel.getEventid()))
-        {
+        if (UserID.equals(eventsModel.getEventid())) {
             holder.delete.setVisibility(View.VISIBLE);
             holder.edit.setVisibility(View.VISIBLE);
             holder.enroll.setVisibility(View.GONE);
-        }
-        else
-        {
+            holder.unenroll.setVisibility(View.GONE);
+        } else {
             holder.delete.setVisibility(View.GONE);
             holder.edit.setVisibility(View.GONE);
-            holder.enroll.setVisibility(View.VISIBLE);
-        }
 
+            FirebaseFirestore.getInstance().collection("Events").document(DocID).collection("Enrolls").document(UserID).get()
+                    .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                        @Override
+                        public void onSuccess(DocumentSnapshot documentSnapshot) {
+//                            Log.d("MSHHHHH","JJ");
+                            EventsModel Enrollcheck=documentSnapshot.toObject(EventsModel.class);
+                            String enrollcheck ;
+                                enrollcheck= Enrollcheck != null ? Enrollcheck.getEnrollcheck() : null;
+//                            Log.d("enrollcheck", " " + enrollcheck);
+
+                            if (enrollcheck != null && enrollcheck.equals("true")) {
+                                holder.enroll.setVisibility(View.GONE);
+                                holder.unenroll.setVisibility(View.VISIBLE);
+                            } else {
+                                holder.enroll.setVisibility(View.VISIBLE);
+                                holder.unenroll.setVisibility(View.GONE);
+                            }
+                        }
+                    });
+        }
         holder.event_disp.setText(eventsModel.getEvent());
         holder.by_disp.setText(eventsModel.getBy());
         holder.count_disp.setText(eventsModel.getCount());
@@ -59,16 +82,63 @@ public class EventsAdapter extends FirestoreRecyclerAdapter<EventsModel, EventsA
         holder.edit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent =new Intent(v.getContext(), UpdateEventActivity.class);
-                intent.putExtra("event_name",eventsModel.getEvent());
-                intent.putExtra("organised_by",eventsModel.getBy());
-                intent.putExtra("date",eventsModel.getDate());
-                intent.putExtra("docid",eventsModel.getDocid());
+                Intent intent = new Intent(v.getContext(), UpdateEventActivity.class);
+                intent.putExtra("event_name", eventsModel.getEvent());
+                intent.putExtra("organised_by", eventsModel.getBy());
+                intent.putExtra("date", eventsModel.getDate());
+                intent.putExtra("docid", eventsModel.getDocid());
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 v.getContext().startActivity(intent);
             }
         });
         holder.delete.setOnClickListener(v -> DeleteEvent(v.getContext(), item));
+
+        String finalUserID = UserID;
+        holder.enroll.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Map<String, Object> users = new HashMap<>();
+                users.put("UserID", finalUserID);
+                String enrollcheck = "true";
+                users.put("enrollcheck", enrollcheck);           //=false if not enrolled and =true if enrolled
+                DocumentReference Users = FirebaseFirestore.getInstance().collection("Events").document(DocID).collection("Enrolls").document(finalUserID);
+                Users.set(users).addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void unused) {
+                        Toast.makeText(v.getContext(), "Enrolled Successfully!", Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+                Map<String,Object> events =new HashMap<>();
+                events.put("enrollID",eventsModel.getDocid());
+                DocumentReference documentReference=FirebaseFirestore.getInstance().collection("Users").document(finalUserID).collection("Enrolls").document(eventsModel.getDocid());
+                documentReference.set(events);
+
+
+                holder.unenroll.setVisibility(View.VISIBLE);
+                holder.enroll.setVisibility(View.GONE);
+            }
+        });
+        holder.unenroll.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Map<String, Object> users = new HashMap<>();
+                String enrollcheck = "false";
+                users.put("enrollcheck", enrollcheck);            //=false if not enrolled and =true if enrolled
+                DocumentReference Users = FirebaseFirestore.getInstance().collection("Events").document(DocID).collection("Enrolls").document(finalUserID);
+                Users.update(users).addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void unused) {
+                        Toast.makeText(v.getContext(), "Unenrolled Successfully!", Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+                DocumentReference documentReference=FirebaseFirestore.getInstance().collection("Users").document(finalUserID).collection("Enrolls").document(eventsModel.getDocid());
+                documentReference.delete();
+                holder.enroll.setVisibility(View.VISIBLE);
+                holder.unenroll.setVisibility(View.GONE);
+            }
+        });
 
     }
 
@@ -81,7 +151,7 @@ public class EventsAdapter extends FirestoreRecyclerAdapter<EventsModel, EventsA
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
         TextView by_disp, count_disp, event_disp;
-        Button enroll, edit, delete;
+        Button enroll, edit, delete, unenroll;
 
         public MyViewHolder(View itemView) {
             super(itemView);
@@ -91,6 +161,7 @@ public class EventsAdapter extends FirestoreRecyclerAdapter<EventsModel, EventsA
             enroll = itemView.findViewById(R.id.enroll_disp);
             edit = itemView.findViewById(R.id.edit_disp);
             delete = itemView.findViewById(R.id.delete_disp);
+            unenroll = itemView.findViewById(R.id.unenroll_disp);
         }
     }
 
@@ -126,6 +197,8 @@ public class EventsAdapter extends FirestoreRecyclerAdapter<EventsModel, EventsA
         alertDialog.show();
 
     }
+
+
 
 
 }
